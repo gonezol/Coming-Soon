@@ -49,13 +49,13 @@
       <div class="muted">[ACCESS CLOSED]</div>
       <div>first ten have entered. the rest: wait for the signal.</div>
 
-      <!-- Release date (edit this line) -->
+      <!-- Release date -->
       <div class="block">
         <div class="muted">public release</div>
-        <div class="count" id="dateLine"><span class="ok">Aug 22, 2025</span> at <span class="ok">18:09</span> (ET)</div>
+        <div class="count" id="dateLine"><span class="ok">Aug 22, 2025</span> at <span class="ok">18:00</span> (ET)</div>
       </div>
 
-      <!-- Optional countdown (auto, based on date above) -->
+      <!-- Optional countdown -->
       <div class="block" id="countWrap" style="display:none">
         <div class="muted">countdown</div>
         <div class="count" id="countdown">calculating…</div>
@@ -81,11 +81,8 @@
   </div>
 
   <script>
-    // === OPTIONAL COUNTDOWN ===
-    // Edit this to match your public release time (ET):
-    // Month is 0-indexed in JS: 0=Jan … 7=Aug … 11=Dec
-    const releaseDateET = new Date(Date.UTC(2025, 7, 22, 22, 9, 0)); 
-    // Explanation: Aug(7) 22, 2025 at 18:09 ET = 22:09 UTC during EDT (UTC-4)
+    // Release date/time in ET: Aug 22, 2025 @ 18:00 ET
+    const releaseDateET = new Date(Date.UTC(2025, 7, 22, 22, 0, 0)); // 22:00 UTC = 18:00 ET
 
     const cd = document.getElementById("countdown");
     const wrap = document.getElementById("countWrap");
