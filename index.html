@@ -12,6 +12,7 @@
       font:16px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
       display:grid; place-items:center; overflow:hidden;
     }
+
     .frame {
       width:min(700px, 100% - 32px);
       border:1px solid #191919; border-radius:14px;
@@ -25,70 +26,87 @@
     .count { font-size:1.1rem; margin-top:10px }
     .big { font-size:2.35rem; margin-top:16px }
 
-    /* STATIC NOISE */
+    /* === STATIC NOISE (strong, self-contained) === */
     .noise {
-      position:fixed; inset:0; z-index:1; opacity:.35; pointer-events:none;
+      position:fixed; inset:0; z-index:1; pointer-events:none;
       mix-blend-mode:screen;
+      opacity:.50; /* base static strength */
+      animation: noisePulse 2.2s infinite steps(1, end);
+    }
+    @keyframes noisePulse {
+      /* idle vs spikes */
+      0%, 12%, 28%, 44%, 60%, 76%, 92%, 100% { opacity:.50; }
+      13% { opacity:.60; } 14% { opacity:.42; }
+      29% { opacity:.66; } 30% { opacity:.46; }
+      45% { opacity:.74; } 46% { opacity:.50; }
+      61% { opacity:.62; } 62% { opacity:.48; }
+      77% { opacity:.70; } 78% { opacity:.52; }
+      93% { opacity:.78; }
     }
 
-    /* Scanlines overlay */
+    /* Scanlines with extra presence */
     .scanlines {
-      position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.18;
+      position:fixed; inset:0; z-index:2; pointer-events:none;
       background:
         repeating-linear-gradient(
           180deg,
-          rgba(255,255,255,.03) 0px,
-          rgba(255,255,255,.03) 2px,
-          rgba(0,0,0,.03) 3px,
-          rgba(0,0,0,.03) 4px
+          rgba(255,255,255,.04) 0px,
+          rgba(255,255,255,.04) 2px,
+          rgba(0,0,0,.04) 3px,
+          rgba(0,0,0,.04) 4px
         );
+      opacity:.22;
+      animation: linesPulse 4.6s infinite ease-in-out;
     }
+    @keyframes linesPulse { 0%,100%{opacity:.22} 50%{opacity:.28} }
 
-    /* Big Ø background with glitch flicker */
+    /* Big Ø background with heavier glitch flicker */
     .symbol {
       position:fixed; inset:0; z-index:0; pointer-events:none;
-      font-size:45vw; font-weight:bold; color:rgba(255,255,255,0.08);
-      display:flex; align-items:center; justify-content:center;
-      user-select:none;
-      animation: flicker 5s infinite steps(1, end);
+      font-size:45vw; font-weight:bold; color:rgba(255,255,255,0.14);
+      display:flex; align-items:center; justify-content:center; user-select:none;
+      animation: flicker 2s infinite steps(1, end);
+      text-shadow:
+        0 0 12px rgba(140,255,156,0.05),
+        -1px 0 rgba(140,255,156,0.07),
+        1px 0 rgba(255,255,255,0.05);
     }
-
     @keyframes flicker {
-      0%, 85%, 100% { opacity:0.08; transform:scale(1); }
-      86% { opacity:0.02; transform:scale(1.02); }
-      87% { opacity:0.12; transform:scale(0.98); }
-      88% { opacity:0.05; transform:scale(1.01); }
-      89% { opacity:0.08; transform:scale(1); }
+      0%, 18%, 36%, 54%, 72%, 90%, 100% { opacity:.14; transform:scale(1) skewX(0) skewY(0); filter:none; }
+      19% { opacity:.25; transform:scale(1.02) skewX(.4deg); }
+      20% { opacity:.06; transform:scale(.99) skewY(.3deg); }
+      37% { opacity:.22; transform:scale(1.03) skewY(.4deg); }
+      38% { opacity:.08; transform:scale(1) }
+      55% { opacity:.28; transform:scale(1.05) skewX(.6deg); filter:contrast(110%); }
+      56% { opacity:.09; transform:scale(1) }
+      73% { opacity:.24; transform:scale(1.02) }
+      74% { opacity:.07; }
+      91% { opacity:.30; transform:scale(1.06); }
     }
 
-    /* Jitter */
-    @keyframes jitter {
-      0%, 96%, 100% { transform:translate(0,0); }
-      97% { transform:translate(-1px, 0); }
-      98% { transform:translate(1px, 0); }
-      99% { transform:translate(0, 1px); }
-    }
+    /* Subtle CRT jitter on the card */
+    @keyframes jitter { 0%,96%,100%{transform:translate(0,0)} 97%{transform:translate(-1px,0)} 98%{transform:translate(1px,0)} 99%{transform:translate(0,1px)} }
     .jitter { animation:jitter 5s infinite linear; }
   </style>
 </head>
 <body>
   <!-- Large faded Ø -->
-  <div class="symbol">Ø</div>
+  <div class="symbol" aria-hidden="true">Ø</div>
 
-  <!-- Animated SVG noise -->
+  <!-- Animated SVG noise (frequency animates) -->
   <svg class="noise" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
     <filter id="noiseFilter">
-      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="3" stitchTiles="stitch">
-        <animate attributeName="baseFrequency" dur="5s" values="1.3;1.5;1.4;1.45;1.35" repeatCount="indefinite" />
+      <feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="3" seed="13" stitchTiles="stitch">
+        <animate attributeName="baseFrequency" dur="4s" values="1.6;1.85;1.7;1.78;1.65" repeatCount="indefinite" />
       </feTurbulence>
       <feColorMatrix type="saturate" values="0" />
     </filter>
     <rect width="100%" height="100%" filter="url(#noiseFilter)"></rect>
   </svg>
 
-  <div class="scanlines"></div>
+  <div class="scanlines" aria-hidden="true"></div>
 
-  <div class="frame jitter">
+  <div class="frame jitter" role="document" aria-label="AWØL release notice">
     <div class="muted">[ACCESS CLOSED]</div>
     <div class="big">First 10 have entered.</div>
     <div class="count">
@@ -98,6 +116,7 @@
   </div>
 
   <script>
+    // 00:00 ET on Aug 22, 2025 = 04:00 UTC
     const releaseDateET = new Date(Date.UTC(2025, 7, 22, 4, 0, 0));
 
     function updateCountdown() {
@@ -112,13 +131,12 @@
       const pad = n => String(n).padStart(2,"0");
       el.textContent = `T-minus ${d}d ${pad(h)}h ${pad(m)}m ${pad(s)}s`;
     }
-
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
-    // Resize noise SVG
+    // Resize noise SVG to viewport
     const svg = document.querySelector('.noise');
-    function sizeSVG(){ svg.setAttribute('width', window.innerWidth); svg.setAttribute('height', window.innerHeight); }
+    function sizeSVG(){ svg.setAttribute('width', innerWidth); svg.setAttribute('height', innerHeight); }
     sizeSVG(); addEventListener('resize', sizeSVG);
   </script>
 </body>
